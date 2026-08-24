@@ -1,10 +1,10 @@
 [project]
-name = "pos-awesome"
+name = "POS-awesome"
 authors = [
     { name = "ERP Champions", email = "info@erpchampions.com"}
 ]
 description = "POS Awesome"
-requires-python = ">=3.10"
+requires-python = ">=3.7"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
