@@ -1,5 +1,5 @@
 [project]
-name = "POS-awesome"
+name = "posawesome"
 authors = [
     { name = "ERP Champions", email = "info@erpchampions.com" }
 ]
