@@ -1,0 +1,27 @@
+[project]
+name = "posawesome"
+authors = [
+    { name = "Youssef Restom", email = "youssef@totrox.com"}
+]
+description = "POS Awesome"
+requires-python = ">=3.10"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    # frappe and erpnext are installed and managed by bench.
+]
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+# Frappe Cloud reads this to place the app in a bench group and rejects the
+# app without it ("This repository isn't a valid Frappe app").
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0,<16.0.0"
+erpnext = ">=15.0.0,<16.0.0"
+
+[tool.bench.dev-dependencies]
+
+[deploy.dependencies.apt]
+packages = []
