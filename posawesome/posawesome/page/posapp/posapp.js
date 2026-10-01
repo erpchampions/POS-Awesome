@@ -6,7 +6,13 @@ frappe.pages['posapp'].on_page_load = function (wrapper) {
 		single_column: true
 	});
 
-	this.page.$PosApp = new frappe.PosApp.posapp(this.page);
+	// loaded here rather than on every desk page (see app_include_js in hooks.py)
+	frappe.require([
+		"/assets/posawesome/node_modules/vuetify/dist/vuetify.js",
+		"posawesome.bundle.js",
+	], () => {
+		this.page.$PosApp = new frappe.PosApp.posapp(this.page);
+	});
 
 	$('div.navbar-fixed-top').find('.container').css('padding', '0');
 

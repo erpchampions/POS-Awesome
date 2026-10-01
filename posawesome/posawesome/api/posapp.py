@@ -12,11 +12,7 @@ from erpnext.stock.get_item_details import get_item_details
 from erpnext.accounts.doctype.pos_profile.pos_profile import get_item_groups
 from frappe.utils.background_jobs import enqueue
 from erpnext.accounts.party import get_party_bank_account
-from erpnext.stock.doctype.batch.batch import (
-    get_batch_no,
-    get_batch_qty,
-    set_batch_nos,
-)
+from erpnext.stock.doctype.batch.batch import get_batch_qty
 from erpnext.accounts.doctype.payment_request.payment_request import (
     get_dummy_message,
     get_existing_payment_request_amount,
@@ -619,8 +615,9 @@ def submit_invoice(invoice, data):
 
     payments = invoice_doc.payments
 
-    if frappe.get_value("POS Profile", invoice_doc.pos_profile, "posa_auto_set_batch"):
-        set_batch_nos(invoice_doc, "warehouse", throw=True)
+    # ERPNext v15 removed set_batch_nos; batches left empty are picked when the
+    # invoice validates (Serial and Batch Bundle auto-creation, plus ezzi's FIFO
+    # before_validate hook), so posa_auto_set_batch needs no extra step here.
     set_batch_nos_for_bundels(invoice_doc, "warehouse", throw=True)
 
     invoice_doc.flags.ignore_permissions = True
@@ -675,17 +672,16 @@ def submit_invoice(invoice, data):
 
 
 def set_batch_nos_for_bundels(doc, warehouse_field, throw=False):
-    """Automatically select `batch_no` for outgoing items in item table"""
+    """Check the stock of batches chosen for packed (bundle) items.
+
+    Rows without a batch are left for ERPNext v15 to fill when the invoice validates.
+    """
     for d in doc.packed_items:
         qty = d.get("stock_qty") or d.get("transfer_qty") or d.get("qty") or 0
         has_batch_no = frappe.db.get_value("Item", d.item_code, "has_batch_no")
         warehouse = d.get(warehouse_field, None)
         if has_batch_no and warehouse and qty > 0:
-            if not d.batch_no:
-                d.batch_no = get_batch_no(
-                    d.item_code, warehouse, qty, throw, d.serial_no
-                )
-            else:
+            if d.batch_no:
                 batch_qty = get_batch_qty(batch_no=d.batch_no, warehouse=warehouse)
                 if flt(batch_qty, d.precision("qty")) < flt(qty, d.precision("qty")):
                     frappe.throw(

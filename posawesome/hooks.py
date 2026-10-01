@@ -17,10 +17,12 @@ app_license = "GPLv3"
 # include js, css files in header of desk.html
 # app_include_css = "/assets/posawesome/css/posawesome.css"
 # app_include_js = "/assets/posawesome/js/posawesome.js"
-app_include_js = [
-    "/assets/posawesome/node_modules/vuetify/dist/vuetify.js",
-    "posawesome.bundle.js",
-]
+# Not loaded on every desk page any more: this is Vue 2 / Vuetify 2 code, and on
+# Frappe v15 (Vue 3) it threw on every page load. The POS page loads it on demand.
+# app_include_js = [
+#     "/assets/posawesome/node_modules/vuetify/dist/vuetify.js",
+#     "posawesome.bundle.js",
+# ]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/posawesome/css/posawesome.css"
